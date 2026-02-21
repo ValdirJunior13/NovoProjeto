@@ -99,7 +99,7 @@ export default async function rotasUsuarios(fastify, options){
             }
 
             const token = jwt.sign(
-                {idUsuario: usuarioEncontrado.id},
+                {idUsuario: usuarioEncontrado._id},
                 process.env.JWT_SECRET, 
                 {expiresIn: '7d'}
             );
@@ -116,4 +116,25 @@ export default async function rotasUsuarios(fastify, options){
         }
     });
 
+    fastify.get('/user/livros', async(request, reply) => {
+        const authHeader = request.headers['authorization'];
+        if (!authHeader) {
+                return reply.status(401).send({ erro: "Acesso negado. Token não fornecido." });
+            }
+        const token = authHeader.replace("Bearer", "");
+        
+        const usuarioLogado = jwt.verify(token, process.env.JWT_SECRET);
+
+        const dadosUsuario = await Usuario.findById(usuarioLogado.idUsuario);
+
+        if (!dadosUsuario) {
+                return reply.status(404).send({ erro: "Usuário não encontrado no banco." });
+            }
+        const acharLivros = await Livro.find();
+
+        return reply.status(200).send({
+            message: "Deu tudo certo",
+            acharLivros: acharLivros
+        })
+    });
 }

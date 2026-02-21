@@ -9,7 +9,8 @@ const livroOnlineSchema = new mongoose.Schema({
     categoria: String,
     tags: String,
     formato: String,
-    digital: Boolean
+    digital: Boolean,
+    
 });
 
 const livroOffSchema = new mongoose.Schema({
